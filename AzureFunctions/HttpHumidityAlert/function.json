@@ -1,0 +1,25 @@
+{
+    "bindings": [
+      {
+        "authLevel": "function",
+        "name": "req",
+        "type": "httpTrigger",
+        "direction": "in"
+      },
+      {
+        "name": "message",
+        "type": "sendGrid",
+        "direction": "out",
+        "apiKey": "SendGridAttribute.ApiKey",
+        "to": "YOUR_E_MAIL_HERE",
+        "from": "iot@alert.com",
+        "subject": "IoT Humidity Alert"
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "out"
+      }
+    ],
+    "disabled": false
+  }

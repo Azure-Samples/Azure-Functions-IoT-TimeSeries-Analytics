@@ -1,0 +1,25 @@
+{
+    "bindings": [
+      {
+        "authLevel": "function",
+        "type": "httpTrigger",
+        "direction": "in",
+        "name": "req"
+      },
+      {
+        "type": "http",
+        "direction": "out",
+        "name": "res"
+      },
+      {
+        "type": "sendGrid",
+        "name": "message",
+        "apiKey": "SendGridAttribute.ApiKey",
+        "to": "YOUR_E_MAIL_HERE",
+        "from": "iot@alert.com",
+        "subject": "IoT Temperature Alert",
+        "direction": "out"
+      }
+    ],
+    "disabled": false
+  }
