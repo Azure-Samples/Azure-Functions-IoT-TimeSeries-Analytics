@@ -21,7 +21,7 @@ sudo pip install -U azure-iot-edge-runtime-ctl
 
 if [ ! -z $CONN_STR ]; then
 	echo 'Attempting to setup device with connection string {'$CONN_STR'}'
-	sudo iotedgectl setup --connection-string $CONN_STR --auto-cert-gen-force-no-passwords
+	sudo iotedgectl setup --connection-string "$CONN_STR" --auto-cert-gen-force-no-passwords
 
 	echo 'starting up device.'
 	sudo iotedgectl start
