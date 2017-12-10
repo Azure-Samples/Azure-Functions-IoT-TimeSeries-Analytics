@@ -121,9 +121,15 @@ Next, the connections to 3 Event Hubs instances need to be confugyred. These Eve
 
 First, IoT Hub Endpoints will be defined for each of the Event Hubs as shown below:
 
+![IoT Hub Endpoints](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/IotHubEndpoints.PNG "IoT Hub Endpoints")
+
 Next, the rules for sending the data to the correct IoT Hub instance is defined. The rules are called "routes" in IoT Hub and the final configuration looks like:
 
+![IoT Hub Routes](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/IotHubRoutes.PNG "IoT Hub Routes")
+
 And here is the configuration for the humiditiy route:
+
+![IoT Hub Humidity Route](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/IotHubHumidityRoute.PNG "IoT Hub Humidity Route")
 
 Two of the Event Hubs are connected to Stream Analytics Jobs that are aggregating the values and based on predefined threshold trigger an Azure Function for sending an email.
 
