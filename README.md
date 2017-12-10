@@ -2,7 +2,7 @@
 
 ## Overview
 
-**IoT Alerting System** helps to monitor temperature and humidity conditions and infrom responsible technicians for unexpected changes in the values. 
+**IoT Alerting System** helps to monitor temperature and humidity conditions and inform responsible technicians for unexpected changes in the values. 
 
 The project has the following architecture:
 
@@ -16,13 +16,13 @@ A several steps walkthrough for building the project  is provided below.
 
 ### 1. Setting Up Edge Devices
 
-Finding and using a real IoT device is sometimes diffucult that is why we will use Azure VM instead.
+Finding and using a real IoT device is sometimes difficult that is why we will use Azure VM instead.
 
 Please follow the instructions in this tutorial to [deploy Azure IoT Edge runtime on Azure Linux VM](https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-simulate-device-linux "deploy Azure IoT Edge runtime on Azure Linux VM"). 
 
 ### 2. Azure Function on IoT Edge
 
-Next, we will deploy our first Azure Function that will be responsilbe for monitoring machines temperature. For that step follow the tutorial for [deploying Azure Function to IoT Edge](https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-deploy-function "deploying Azure Function to IoT Edge"). You can find all required assets for this function in the folder [Temperature Filter Function](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/tree/master/AzureIoTEdgeFunctions/TemperatureFilterFunction "Temperature Filter Function")
+Next, we will deploy our first Azure Function that will be responsible for monitoring machines temperature. For that step follow the tutorial for [deploying Azure Function to IoT Edge](https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-deploy-function "deploying Azure Function to IoT Edge"). You can find all required assets for this function in the folder [Temperature Filter Function](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/tree/master/AzureIoTEdgeFunctions/TemperatureFilterFunction "Temperature Filter Function")
 
 And the source code the functions is:
 
@@ -117,7 +117,7 @@ Also, the IoT Hub routes now will be extended to the following configuration:
 
 ### 3. Configure IoT Hub
 
-Next, the connections to 3 Event Hubs instances need to be confugyred. These Event Hub instances will allow be responsible for getting the data from IoT Hub and pass it for further processing.
+Next, the connections to 3 Event Hubs instances need to be configured. These Event Hub instances will allow be responsible for getting the data from IoT Hub and pass it for further processing.
 
 First, IoT Hub Endpoints will be defined for each of the Event Hubs as shown below:
 
@@ -127,7 +127,7 @@ Next, the rules for sending the data to the correct IoT Hub instance is defined.
 
 ![IoT Hub Routes](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/IotHubRoutes.PNG "IoT Hub Routes")
 
-And here is the configuration for the humiditiy route:
+And here is the configuration for the humidity route:
 
 ![IoT Hub Humidity Route](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/IotHubHumidityRoute.PNG "IoT Hub Humidity Route")
 
@@ -176,17 +176,17 @@ IoT Hub is sending all the data it gets to an instance of Event Hub. This Event 
 
 ![Time Series Insights Data Source](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/TimeSeriesInsights-EventSources.PNG "Time Series Insights Data Source")
 
-Time Series Insights is built in mind for IoT scenarios. It combines database and chart enging in one product designed to deal with massive amount of data.
+Time Series Insights is built in mind for IoT scenarios. It combines database and powerful visualization capabilities in one product designed for massive data throughput.
 
-Time Series Insights automatically parses your data and shows default grpah of the number of events coming:
+Time Series Insights automatically parses the data and shows a default graph for event count:
 
 ![Deafult dashboard for Time Series Insights](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/TimeSeriesInsights.png "Deafult dashboard for Time Series Insights")
 
-It is very easy to cofigure mutiple queries that can overlay:
+It is extremely easy to configure multiple queries whose graphs can overlay:
 
 ![Mutiple queries in Time Series Insights](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/TimeSeriesInsights-Queries.PNG "Mutiple queries in Time Series Insights")
 
-This can be easily done by cloning a queiry and modifying it. 
+This can be easily done by cloning a query and modifying it.
 
 But it is better if you can plot all your queries on separate part of screen for better visibility:
 
