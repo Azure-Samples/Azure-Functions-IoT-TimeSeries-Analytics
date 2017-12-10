@@ -15,7 +15,7 @@ public async static Task<IActionResult> Run(HttpRequest req, IAsyncCollector<Sen
     {
         var body = await reader.ReadToEndAsync();
         var message = new SendGridMessage();
-        message.AddTo("tsushi@microsoft.com");
+        message.AddTo("technicians@iot.com");
         message.AddContent("text/html", body);
         message.SetFrom("iot@alert.com");
         message.SetSubject("[Alert] IoT Hub Notrtification");
