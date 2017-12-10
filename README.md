@@ -1,5 +1,7 @@
 # IoT Alerting System Powered by Azure IoT Edge, Azure Functions and Time Series Insights
 
+## Overview
+
 **IoT Alerting System** helps to monitor temperature and humidity conditions and infrom responsible technicians for unexpected changes in the values. 
 
 The project has the following architecture:
@@ -9,6 +11,18 @@ The project has the following architecture:
 A group of devices is monitoring machine temperature and ambient humidity. On the devices are deployed **two functions - one for monitoring machine temperature and another one for ambient humidity**. The functions monitor if the values are above predefined threshold and if so, they send the data to a **IoT Hub**. In the IoT Hub the data is filtered and it is sent to one of the configured **Event Hubs** to persist in **Time Series Insights** or pass it for aggregation by **Azure Stream Analytics**. If there are more events than predefined threshold in **Azure Stream Analytics** an **Azure Function** is triggered to send an email to the responsible technician.
 
 A several steps walkthrough for building the project  is provided below.
+
+## Walkthrough
+
+### 1. Setting Up Edge Devices
+
+### 2. Azure Function on IoT Edge
+
+### 3. Configuring IoT Hub
+
+### 4. Azure Functions for Alerting
+
+### 5. Analyzing Data with Time Series Insights 
 
 
 ## Features
