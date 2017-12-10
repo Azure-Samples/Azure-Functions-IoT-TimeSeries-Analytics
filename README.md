@@ -168,7 +168,18 @@ HAVING
 
 ### 4. Azure Functions for Alerting
 
+This section will be written by @TsuyoshiUshio
+
+
 ### 5. Analyzing Data with Time Series Insights 
+
+IoT Hub is sending all the data it gets to an instance of Event Hub. This Event Hub is configured to be a source of data for [Time Series Insights](https://azure.microsoft.com/en-us/services/time-series-insights/) instance:
+
+
+
+Time Series Insights is built in mind for IoT scenarios. It combines database and charting enging in one product designed to deal with massive amount of data.
+
+
 
 
 ## Features
