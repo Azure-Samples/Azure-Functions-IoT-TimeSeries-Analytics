@@ -67,7 +67,7 @@ And the source code the functions is:
     }
 
 ```
-The next function that will monitor ambient humidity you can follow again the tutorial for [deploying Azure Function to IoT Edge](https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-deploy-function "deploying Azure Function to IoT Edge") with few modifications:
+The other function  will monitor ambient humidity and again you can follow the tutorial for [deploying Azure Function to IoT Edge](https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-deploy-function "deploying Azure Function to IoT Edge") with few modifications:
 
 * In **Create a function project** change the function code slightly:
 
@@ -116,6 +116,49 @@ Also, the IoT Hub routes now will be extended to the following configuration:
 ```
 
 ### 3. Configure IoT Hub
+
+Next, the connections to 3 Event Hubs instances need to be confugyred. These Event Hub instances will allow be responsible for getting the data from IoT Hub and pass it for further processing.
+
+First, IoT Hub Endpoints will be defined for each of the Event Hubs as shown below:
+
+Next, the rules for sending the data to the correct IoT Hub instance is defined. The rules are called "routes" in IoT Hub and the final configuration looks like:
+
+And here is the configuration for the humiditiy route:
+
+Two of the Event Hubs are connected to Stream Analytics Jobs that are aggregating the values and based on predefined threshold trigger an Azure Function for sending an email.
+
+This is the Azure Stream Analytics job for humidity:
+
+```sql
+SELECT
+    System.TimeStamp AS Time,
+    COUNT(*) AS [Count]
+INTO
+    humidityout
+FROM
+    humidity TIMESTAMP BY TIMECREATED
+GROUP BY
+    TumblingWindow(second, 180)
+HAVING
+    [Count] >= 5
+    
+```
+
+And this is the Azure Stream Analytics job for temperature:
+
+```sql
+SELECT
+    System.TimeStamp AS Time,
+    COUNT(*) AS [Count]
+INTO
+    AlertOutput
+FROM
+    temperature TIMESTAMP BY TIMECREATED
+GROUP BY
+    TumblingWindow(second, 180)
+HAVING
+    [Count] >= 5
+```
 
 ### 4. Azure Functions for Alerting
 
