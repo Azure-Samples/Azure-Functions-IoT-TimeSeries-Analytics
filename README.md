@@ -26,7 +26,7 @@ Next, we will deploy our first Azure Function that will be responsilbe for monit
 
 And the source code the functions is:
 
-[!code-csharp[Main](~/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/AzureIoTEdgeFunctions/TemperatureFilterFunction/EdgeHubTrigger-Csharp/run.csx)]
+[!code-csharp[Main](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/AzureIoTEdgeFunctions/TemperatureFilterFunction/EdgeHubTrigger-Csharp/run.csx)]
 
 We will deploy one 
 
