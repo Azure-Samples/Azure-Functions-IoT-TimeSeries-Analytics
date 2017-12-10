@@ -69,7 +69,7 @@ And the source code the functions is:
 ```
 The other function  will monitor ambient humidity and again you can follow the tutorial for [deploying Azure Function to IoT Edge](https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-deploy-function "deploying Azure Function to IoT Edge") with few modifications:
 
-* In **Create a function project** change the function code slightly:
+* In **Create a function project** change the function code slightly. You can find all required assets for this function in the folder [Humidity Filter Function](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/tree/master/AzureIoTEdgeFunctions/HumidityFilterFunction "Humidity Filter Function"). The code for the function is below:
 
 ```csharp
     ...
@@ -100,9 +100,9 @@ The other function  will monitor ambient humidity and again you can follow the t
     }
 
 ```
-You can find all required assets for this function in the folder [Humidity Filter Function](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/tree/master/AzureIoTEdgeFunctions/HumidityFilterFunction "Humidity Filter Function")
 
-Also, the IoT Hub routes now will be extended to the following configuration:
+
+* Also, the IoT Hub routes now will be extended to the following configuration:
 
 ```json
      {
@@ -167,7 +167,67 @@ HAVING
 
 ### 4. Azure Functions for Alerting
 
-This section will be written by @TsuyoshiUshio
+An email will be send when we have more than 5 events per 3 minutes related to elevated temperature or ambient humidity.
+Azure Stream Analytics has first party integration with Azure Functions. We use Azure Function Runtime v2 so please follow the [steps](https://docs.microsoft.com/en-us/azure/azure-functions/functions-versions "Configure Azure Function App to use runtime version 2") to configure your Function App. The code for the function is below: 
+
+```csharp
+#r "Newtonsoft.Json"
+#r "SendGrid"
+
+using System.Net;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json; 
+using SendGrid.Helpers.Mail; 
+using System.Text;
+
+public async static Task<IActionResult> Run(HttpRequest req, IAsyncCollector<SendGridMessage> messages, TraceWriter log)
+{
+    log.Info("SendGrid message"); 
+    using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
+    {
+        var body = await reader.ReadToEndAsync();
+        var message = new SendGridMessage();
+        message.AddTo("technicians@iot.com");
+        message.AddContent("text/html", body);
+        message.SetFrom("iot@alert.com");
+        message.SetSubject("[Alert] IoT Hub Notrtification");
+        await messages.AddAsync(message); 
+        return (ActionResult)new OkObjectResult("The E-mail has been sent.");
+    }
+}
+```
+
+The configuration of the function is in function.json file:
+
+```json
+    {
+    "bindings": [
+      {
+        "authLevel": "function",
+        "name": "req",
+        "type": "httpTrigger",
+        "direction": "in"
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "out"
+      },
+      {
+        "type": "sendGrid",
+        "name": "messages",
+        "apiKey": "SendGridAttribute.ApiKey",
+        "direction": "out"
+      }
+    ],
+    "disabled": false
+  }
+```
+
+This function requires to set a SendGrid key to an App Setting property called "SendGridAttribute.ApiKey" inside the Function App. In the Azure portal you can create free account for SendGrid with 20 000 email per month. 
+
+All the assets for the email function can be found [here](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/tree/master/AzureFunctions/HttpHumidityAlertV2 "Folder for Azure Function responsible for sending emails")
 
 
 ### 5. Analyzing Data with Time Series Insights 
