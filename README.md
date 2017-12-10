@@ -147,7 +147,6 @@ GROUP BY
     TumblingWindow(second, 180)
 HAVING
     [Count] >= 5
-    
 ```
 
 And this is the Azure Stream Analytics job for temperature:
@@ -175,12 +174,25 @@ This section will be written by @TsuyoshiUshio
 
 IoT Hub is sending all the data it gets to an instance of Event Hub. This Event Hub is configured to be a source of data for [Time Series Insights](https://azure.microsoft.com/en-us/services/time-series-insights/) instance:
 
+![Time Series Insights Data Source](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/TimeSeriesInsights-EventSources.PNG "Time Series Insights Data Source")
 
+Time Series Insights is built in mind for IoT scenarios. It combines database and chart enging in one product designed to deal with massive amount of data.
 
-Time Series Insights is built in mind for IoT scenarios. It combines database and charting enging in one product designed to deal with massive amount of data.
+Time Series Insights automatically parses your data and shows default grpah of the number of events coming:
 
+![Deafult dashboard for Time Series Insights](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/TimeSeriesInsights.png "Deafult dashboard for Time Series Insights")
 
+It is very easy to cofigure mutiple queries that can overlay:
 
+![Mutiple queries in Time Series Insights](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/TimeSeriesInsights-Queries.PNG "Mutiple queries in Time Series Insights")
+
+This can be easily done by cloning a queiry and modifying it. 
+
+But it is better if you can plot all your queries on separate part of screen for better visibility:
+
+![Time Series Insights with mutiple queries displayed on a dashboard](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/Time%20Series%20Dashboard.PNG "Time Series Insights with mutiple queries displayed on a dashboard")
+
+**Congratulations! You have just built complete IoT solution including edge logic, IoT Hub, alerting email functions and detailed data view powered by Time Series Insights!**  
 
 ## Features
 
