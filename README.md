@@ -227,7 +227,7 @@ The configuration of the function is in function.json file:
 
 This function requires to set a SendGrid key to an App Setting property called "SendGridAttribute.ApiKey" inside the Function App. In the Azure portal you can create free account for SendGrid with 20 000 email per month. 
 
-All the assets for the email function can be found [here](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/tree/master/AzureFunctions/HttpHumidityAlertV2 "Folder for Azure Function responsible for sending emails")
+All the assets for the email function can be found [here](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/tree/master/AzureFunctions/HttpHumidityAlertV2 "Folder for Azure Function responsible for sending emails"). 
 Also, you can find [Node](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/tree/master/AzureFunctions/HttpTemperatureAlert "Node sample for sending emails") and [C# V1](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/tree/master/AzureFunctions/HttpHumidityAlert "C# V1 sample for sending emails") samples.
 
 
