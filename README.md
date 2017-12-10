@@ -26,9 +26,94 @@ Next, we will deploy our first Azure Function that will be responsilbe for monit
 
 And the source code the functions is:
 
-[!code-csharp[Main](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/AzureIoTEdgeFunctions/TemperatureFilterFunction/EdgeHubTrigger-Csharp/run.csx)]
+```csharp
 
-We will deploy one 
+    #r "Microsoft.Azure.Devices.Client"
+    #r "Newtonsoft.Json"
+
+    using System.IO;
+    using Microsoft.Azure.Devices.Client;
+    using Newtonsoft.Json;
+
+    public static async Task Run(Message messageReceived, IAsyncCollector<Message> output, TraceWriter log)
+    {
+        // Temperature Threshold 
+        const int temperatureThreshold = 25;
+        byte[] messageBytes = messageReceived.GetBytes();
+        var messageString = System.Text.Encoding.UTF8.GetString(messageBytes);
+
+        if (!string.IsNullOrEmpty(messageString))
+        {
+            // Get the body of the message and deserialize it
+            var messageBody = JsonConvert.DeserializeObject<MessageBody>(messageString);
+
+            // Check temperature value
+            if (messageBody != null && messageBody.machine.temperature > temperatureThreshold)
+            {
+                // We will send the message to the output as the temperature value is greater than the threashold
+                var filteredMessage = new Message(messageBytes);
+                // We need to copy the properties of the original message into the new Message object
+                foreach (KeyValuePair<string, string> prop in messageReceived.Properties)
+                {
+                    filteredMessage.Properties.Add(prop.Key, prop.Value);
+                }
+                // We are adding a new property to the message to indicate it is a temperature alert
+                filteredMessage.Properties.Add("MessageType", "Alert");
+                // Send the message        
+                await output.AddAsync(filteredMessage);
+                log.Info("Received and transferred a message with temperature above the threshold");
+            }
+        }
+    }
+
+```
+The next function that will monitor ambient humidity you can follow again the tutorial for [deploying Azure Function to IoT Edge](https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-deploy-function "deploying Azure Function to IoT Edge") with few modifications:
+
+* In **Create a function project** change the function code slightly:
+
+```csharp
+    ...
+
+    public static async Task Run(Message messageReceived, IAsyncCollector<Message> output, TraceWriter log)
+    {
+        // Threshold for Humidity
+        const int humidityThreshold = 24;
+
+        byte[] messageBytes = messageReceived.GetBytes();
+        var messageString = System.Text.Encoding.UTF8.GetString(messageBytes);
+
+        if (!string.IsNullOrEmpty(messageString))
+        {
+            ...
+            
+            // Check for humidity value
+            if (messageBody != null && messageBody.ambient.humidity > humidityThreshold)
+            {
+                ...
+                
+                filteredMessage.Properties.Add("MessageType", "HumidityAlert");
+                // Send the message        
+                await output.AddAsync(filteredMessage);
+                log.Info("Received and transferred a message with ambient humidity above the threshold");
+            }
+        }
+    }
+
+```
+You can find all required assets for this function in the folder [Humidity Filter Function](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/tree/master/AzureIoTEdgeFunctions/HumidityFilterFunction "Humidity Filter Function")
+
+Also, the IoT Hub routes now will be extended to the following configuration:
+
+```json
+     {
+      "routes": {
+        "sensorToFilter": "FROM /messages/modules/tempSensor/outputs/temperatureOutput INTO BrokeredEndpoint(\"/modules/temperatureFilter/inputs/input1\")",
+        "sensorToHumidityFilter": "FROM /messages/modules/tempSensor/outputs/temperatureOutput INTO BrokeredEndpoint(\"/modules/humidityFilter/inputs/input1\")",
+        "filterToIoTHub": "FROM /messages/modules/temperatureFilter/outputs/* INTO $upstream",
+        "humidityFilterToIoTHub": "FROM /messages/modules/humidityFilter/outputs/* INTO $upstream"
+        }
+      }
+```
 
 ### 3. Configure IoT Hub
 
