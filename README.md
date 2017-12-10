@@ -16,9 +16,21 @@ A several steps walkthrough for building the project  is provided below.
 
 ### 1. Setting Up Edge Devices
 
+Finding and using a real IoT device is sometimes diffucult that is why we will use Azure VM instead.
+
+Please follow the instructions in this tutorial to [deploy Azure IoT Edge runtime on Azure Linux VM](https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-simulate-device-linux "deploy Azure IoT Edge runtime on Azure Linux VM"). 
+
 ### 2. Azure Function on IoT Edge
 
-### 3. Configuring IoT Hub
+Next, we will deploy our first Azure Function that will be responsilbe for monitoring machines temperature. For that step follow the tutorial for [deploying Azure Function to IoT Edge](https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-deploy-function "deploying Azure Function to IoT Edge"). You can find all required assets for this function in the folder [Temperature Filter Function](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/tree/master/AzureIoTEdgeFunctions/TemperatureFilterFunction "Temperature Filter Function")
+
+And the source code the functions is:
+
+[!code-csharp[Main](~/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/AzureIoTEdgeFunctions/TemperatureFilterFunction/EdgeHubTrigger-Csharp/run.csx)]
+
+We will deploy one 
+
+### 3. Configure IoT Hub
 
 ### 4. Azure Functions for Alerting
 
