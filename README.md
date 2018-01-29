@@ -2,21 +2,21 @@
 
 ## Overview
 
-**IoT Alerting System** helps to monitor temperature and humidity conditions and inform responsible technicians for unexpected changes in the values. 
+**IoT Alerting System** helps to monitor temperature and humidity conditions to inform responsible technicians for unexpected changes in the values using time-series analysis techniques. 
 
 The project has the following architecture:
 
 ![IoT Alerting System Architecture](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/Architecture.PNG "IoT Alerting System Architecture")
 
-A group of devices is monitoring machine temperature and ambient humidity. On the devices are deployed **two functions - one for monitoring machine temperature and another one for ambient humidity**. The functions monitor if the values are above predefined threshold and if so, they send the data to a **IoT Hub**. In the IoT Hub the data is filtered and it is sent to one of the configured **Event Hubs** to persist in **Time Series Insights** or pass it for aggregation by **Azure Stream Analytics**. If there are more events than predefined threshold in **Azure Stream Analytics** an **Azure Function** is triggered to send an email to the responsible technician.
+A group of devices is monitoring machine temperature and ambient humidity. On the devices are deployed **two functions - one for monitoring machine temperature and another one for ambient humidity**. The functions monitor if the values are above predefined threshold and if so, send the data to a **IoT Hub**. In the IoT Hub the data is filtered and it is sent to one of the configured **Event Hubs** to persist in **Time Series Insights** or pass it for aggregation by **Azure Stream Analytics**. If there are more events than predefined threshold in **Azure Stream Analytics** an **Azure Function** is triggered to send an email to the responsible technician.
 
-A several steps walkthrough for building the project  is provided below.
+A walkthrough for building the project is provided below.
 
 ## Walkthrough
 
 ### 1. Setting Up Edge Devices
 
-Finding and using a real IoT device is sometimes difficult that is why we will use Azure VM instead.
+Finding and using a real IoT device is sometimes difficult so we will use Azure VM instead.
 
 Please follow the instructions in this tutorial to [deploy Azure IoT Edge runtime on Azure Linux VM](https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-simulate-device-linux "deploy Azure IoT Edge runtime on Azure Linux VM"). 
 
@@ -24,7 +24,7 @@ Please follow the instructions in this tutorial to [deploy Azure IoT Edge runtim
 
 Next, we will deploy our first Azure Function that will be responsible for monitoring machines temperature. For that step follow the tutorial for [deploying Azure Function to IoT Edge](https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-deploy-function "deploying Azure Function to IoT Edge"). You can find all required assets for this function in the folder [Temperature Filter Function](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/tree/master/AzureIoTEdgeFunctions/TemperatureFilterFunction "Temperature Filter Function")
 
-And the source code the functions is:
+Source Code for functions:
 
 ```csharp
 
@@ -67,9 +67,9 @@ And the source code the functions is:
     }
 
 ```
-The other function  will monitor ambient humidity and again you can follow the tutorial for [deploying Azure Function to IoT Edge](https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-deploy-function "deploying Azure Function to IoT Edge") with few modifications:
+The second function  will monitor ambient humidity.  You can follow the same tutorial for [deploying Azure Function to IoT Edge](https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-deploy-function "deploying Azure Function to IoT Edge") with a few modifications:
 
-* In **Create a function project** change the function code slightly. You can find all required assets for this function in the folder [Humidity Filter Function](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/tree/master/AzureIoTEdgeFunctions/HumidityFilterFunction "Humidity Filter Function"). The code for the function is below:
+* In **Create a function project** change the function code to below. You can find all required assets for this function in the folder [Humidity Filter Function](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/tree/master/AzureIoTEdgeFunctions/HumidityFilterFunction "Humidity Filter Function"):
 
 ```csharp
     ...
@@ -102,7 +102,7 @@ The other function  will monitor ambient humidity and again you can follow the t
 ```
 
 
-* Also, the IoT Hub routes now will be extended to the following configuration:
+* Modify the IoT Hub routes to the following configuration:
 
 ```json
      {
@@ -117,23 +117,23 @@ The other function  will monitor ambient humidity and again you can follow the t
 
 ### 3. Configure IoT Hub
 
-Next, the connections to 3 Event Hubs instances need to be configured. These Event Hub instances will allow be responsible for getting the data from IoT Hub and pass it for further processing.
+Next, the connections to the 3 Event Hub instances need to be configured. These Event Hub instances will be responsible for getting the data from IoT Hub and passing it along for further processing.
 
-First, IoT Hub Endpoints will be defined for each of the Event Hubs as shown below:
+IoT Hub Endpoints will be defined for each of the Event Hubs as shown below:
 
 ![IoT Hub Endpoints](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/IotHubEndpoints.PNG "IoT Hub Endpoints")
 
-Next, the rules for sending the data to the correct IoT Hub instance is defined. The rules are called "routes" in IoT Hub and the final configuration looks like:
+Next, the rules for routing data to the correct IoT Hub instance are defined. The final configuration looks like:
 
 ![IoT Hub Routes](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/IotHubRoutes.PNG "IoT Hub Routes")
 
-And here is the configuration for the humidity route:
+Next configure the humidity route:
 
 ![IoT Hub Humidity Route](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/IotHubHumidityRoute.PNG "IoT Hub Humidity Route")
 
-Two of the Event Hubs are connected to Stream Analytics Jobs that are aggregating the values and based on predefined threshold trigger an Azure Function for sending an email.
+Two of the Event Hubs are connected to Stream Analytics Jobs that are aggregating the values and based on a predefined threshold trigger built using an Azure Function for sending an email.
 
-This is the Azure Stream Analytics job for humidity:
+Below is the Azure Stream Analytics job for humidity:
 
 ```sql
 SELECT
@@ -149,7 +149,7 @@ HAVING
     [Count] >= 5
 ```
 
-And this is the Azure Stream Analytics job for temperature:
+Below is the Azure Stream Analytics job for temperature:
 
 ```sql
 SELECT
@@ -167,8 +167,11 @@ HAVING
 
 ### 4. Azure Functions for Alerting
 
-An email will be send when we have more than 5 events per 3 minutes related to elevated temperature or ambient humidity.
-Azure Stream Analytics has first party integration with Azure Functions. We use Azure Function Runtime v2 so please follow the [steps](https://docs.microsoft.com/en-us/azure/azure-functions/functions-versions "Configure Azure Function App to use runtime version 2") to configure your Function App. The code for the function is below: 
+An email will be sent when there are:
+- More than 5 elevated temperature events within a 3 minute window.
+- More than 5 ambient humidity events within a 3 minute window.
+
+Azure Stream Analytics has first party integration with Azure Functions. Using Azure Function Runtime v2, follow these [steps](https://docs.microsoft.com/en-us/azure/azure-functions/functions-versions "Configure Azure Function App to use runtime version 2") to configure your Function App. The code for the function is below: 
 
 ```csharp
 #r "Newtonsoft.Json"
@@ -198,7 +201,7 @@ public async static Task<IActionResult> Run(HttpRequest req, IAsyncCollector<Sen
 }
 ```
 
-The configuration of the function is in function.json file:
+Configure the function in function.json file:
 
 ```json
     {
@@ -225,85 +228,29 @@ The configuration of the function is in function.json file:
   }
 ```
 
-This function requires to set a SendGrid key to an App Setting property called "SendGridAttribute.ApiKey" inside the Function App. In the Azure portal you can create free account for SendGrid with 20 000 email per month. 
+This function requires that you set a SendGrid key using the App Setting property called "SendGridAttribute.ApiKey" inside the Function App. In the Azure portal you can create free account for SendGrid with 20 000 email per month. 
 
 All the assets for the email function can be found [here](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/tree/master/AzureFunctions/HttpHumidityAlertV2 "Folder for Azure Function responsible for sending emails")
 
 
 ### 5. Analyzing Data with Time Series Insights 
 
-IoT Hub is sending all the data it gets to an instance of Event Hub. This Event Hub is configured to be a source of data for [Time Series Insights](https://azure.microsoft.com/en-us/services/time-series-insights/) instance:
+IoT Hub sends all recieved events to an instance of Event Hub. This Event Hub is configured to be a source of data for a [Time Series Insights](https://azure.microsoft.com/en-us/services/time-series-insights/) instance:
 
 ![Time Series Insights Data Source](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/TimeSeriesInsights-EventSources.PNG "Time Series Insights Data Source")
 
-Time Series Insights is built in mind for IoT scenarios. It combines database and powerful visualization capabilities in one product designed for massive data throughput.
+Time Series Insights was built with IoT scenarios in mind. It combines familiar SQL syntax and powerful visualization capabilities in one product designed for massive data throughput.
 
 Time Series Insights automatically parses the data and shows a default graph for event count:
 
 ![Deafult dashboard for Time Series Insights](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/TimeSeriesInsights.png "Deafult dashboard for Time Series Insights")
 
-It is extremely easy to configure multiple queries whose graphs can overlay:
+To configure multiple queries whose graphs can overlay:
 
 ![Mutiple queries in Time Series Insights](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/TimeSeriesInsights-Queries.PNG "Mutiple queries in Time Series Insights")
 
-This can be easily done by cloning a query and modifying it.
-
-But it is better if you can plot all your queries on separate part of screen for better visibility:
+This can be done by cloning a query and modifying it. But it is recommended to plot each query on separate part of dashboard for better visibility:
 
 ![Time Series Insights with mutiple queries displayed on a dashboard](https://github.com/Azure-Samples/Azure-Functions-IoT-TimeSeries-Analytics/blob/master/Images/Time%20Series%20Dashboard.PNG "Time Series Insights with mutiple queries displayed on a dashboard")
 
 **Congratulations! You have just built complete IoT solution including edge logic, IoT Hub, alerting email functions and detailed data view powered by Time Series Insights!**  
-
-## Features
-
-This project framework provides the following features:
-
-* Feature 1
-* Feature 2
-* ...
-
-## Getting Started
-
-### Prerequisites
-
-(ideally very short, if any)
-
-- OS
-- Library version
-- ...
-
-### Installation
-
-(ideally very short)
-
-- npm install [package name]
-- mvn install
-- ...
-
-### Quickstart
-(Add steps to get up and running quickly)
-
-1. git clone [repository clone url]
-2. cd [respository name]
-3. ...
-
-
-## Demo
-
-A demo app is included to show how to use the project.
-
-To run the demo, follow these steps:
-
-(Add steps to start up the demo)
-
-1.
-2.
-3.
-
-## Resources
-
-(Any additional resources or related projects)
-
-- Link to supporting information
-- Link to similar sample
-- ...
