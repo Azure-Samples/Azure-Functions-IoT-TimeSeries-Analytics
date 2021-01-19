@@ -1,4 +1,4 @@
-FROM microsoft/azureiotedge-functions-binding:1.0-preview
+FROM mcr.microsoft.com/azureiotedge-functions-binding:1.0
 
 ENV AzureWebJobsScriptRoot=c:\\approot
 
